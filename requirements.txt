@@ -1,0 +1,28 @@
+Django<2.3
+psycopg2-binary
+
+
+# Debugging for Django
+django-extensions  # gives shell_plus as option to run django's shell
+
+# Django Rest Framework
+djangorestframework_simplejwt
+
+# Requirment for separate fronend client, like Angular, React, Vue
+django-cors-headers
+
+# Channels support
+channels
+channels_redis
+twisted[http2,tls]  # Can't install on Windows
+
+################ Bellow are the libraries, that are not MUST HAVE ###################
+################## they just add some additinal functionality #######################
+#####################################################################################
+
+# Send emails via MAILGUN mail relay server.
+django-anymail[mailgun]
+
+# # Redis is Memcache database for Celery server task manager
+redis
+celery

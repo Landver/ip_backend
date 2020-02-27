@@ -1,0 +1,40 @@
+version: '3.7'
+
+volumes:
+  postgres_data:
+
+services:
+  db: # database server
+    restart: always
+    image: postgres:9.6.17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "20"
+  redis:
+    restart: always
+    image: redis
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "20"
+  web: # django server
+    restart: always
+    image: my_web
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "20"
+    depends_on:
+      - db
+      - redis
