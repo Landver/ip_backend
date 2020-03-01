@@ -14,7 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import re_path
+from django.urls import include, re_path
+from django.conf import settings
+from django.conf.urls.static import static
+
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
@@ -24,5 +28,5 @@ urlpatterns = [
     re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),  # need for authorization via DRF Web UI bebugging pannel, do not delete!
     re_path(r'^api-token-auth/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path(r'^api-token-refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
-    re_path(f'^customers/', include(f'customers.urls', namespace=customers)),
+    re_path(f'^customers/', include((f'customers.urls', 'customers'), namespace='customers')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
