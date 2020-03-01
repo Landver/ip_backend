@@ -11,6 +11,9 @@ djangorestframework_simplejwt
 # Requirment for separate fronend client, like Angular, React, Vue
 django-cors-headers
 
+# Enable filtration of queryset
+django_filter
+
 # Channels support
 channels
 channels_redis
@@ -23,6 +26,5 @@ twisted[http2,tls]  # Can't install on Windows
 # Send emails via MAILGUN mail relay server.
 django-anymail[mailgun]
 
-# # Redis is Memcache database for Celery server task manager
-redis
-celery
+# Guardian for anonumous user access
+django-guardian
