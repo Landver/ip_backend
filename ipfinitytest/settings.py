@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = Path(os.path.dirname(__file__)).parent.parent  # (code/tesman/settings/core.py - 3 = code/)
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +27,7 @@ SECRET_KEY = 'coytxdpbfnr7!!(p7t%tcpoytv5c1!s_#u*=%k&_77$k_5(+hw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,10 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'django_filters',
+    'guardian',  # https://github.com/django-guardian/django-guardian
+    'rest_framework',
     'customers',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # required for CORS support
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,15 +77,66 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ipfinitytest.wsgi.application'
 
+AUTH_USER_MODEL = 'customers.User'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ipfinity',
+        'USER': 'ipfinity',
+        'PASSWORD': 'sudo-ooo-erp',
+        'HOST': 'db',
+        'PORT': 5432,
     }
+}
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+# CORS library, used for React and django-cors-headers support
+# ------------------------------------------------------------------------------
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',  # we use it for Token authentication
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    # bellow headers are not default. 3rd party client needs them
+    'access-control-allow-credentials',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
+    'access-control-allow-origin',
+)
+
+
+# Django Restfull framework
+# ------------------------------------------------------------------------------
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # for Django-REST-Framework
+        'rest_framework.authentication.SessionAuthentication',  # for original admin pannel of Django
+    ),
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DATE_FORMAT': "%Y-%m-%d",
+    'TIME_FORMAT': "%H:%M:%S",
+    'TEST_REQUEST_RENDERER_CLASSES': [
+            'rest_framework.renderers.JSONRenderer',
+        ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 
@@ -120,8 +178,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Media files
+MEDIA_ROOT = ROOT_DIR / 'media'
+MEDIA_URL = '/media/'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+
+# Email client configuration
+ANYMAIL = {
+    "MAILGUN_API_KEY": "b99cdb10e6cb2befb764ad897996cae6-1df6ec32-28a5b9d7",
+    "MAILGUN_API_URL": "https://api.eu.mailgun.net/v3"
 }
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"  # or sendgrid.EmailBackend, or...
+DEFAULT_FROM_EMAIL = "do_not_reply@ipfinity.project.corpberry.com"  # if you don't already have this in settings
+SERVER_EMAIL = "alerts@ipfinity.project.corpberry.com"  # ditto (default from-email for Django errors)
+
+
+FRONTEND_URL = 'http://ipfinity.project.corpberry.com'
