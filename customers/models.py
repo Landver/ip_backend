@@ -1,4 +1,10 @@
+import uuid
+
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.text import slugify
+from django.urls import reverse
+from django.urls.exceptions import NoReverseMatch
 
 
 class BaseInfo(models.Model):
@@ -39,6 +45,7 @@ class User(BaseInfo, AbstractUser):
 
     name = models.CharField(max_length=256, editable=False)
     role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='user')
+    terms_confirmation = models.BooleanField()
 
     def save(self, app_label=None, model_name=None, *args, **kwargs):
         if self.first_name:
@@ -51,9 +58,12 @@ class User(BaseInfo, AbstractUser):
 
         super().save(*args, **kwargs)
 
+    class Meta:
+        ordering = ['name']
+
 
 class EnrolmentRequest(BaseInfo):
-    name = models.CharField(max_length=256, editable=False)
+    name = models.CharField(max_length=256)
     account_name = models.CharField(max_length=256)
     company_name = models.CharField(max_length=256)
     email = models.EmailField(unique=True)
@@ -61,13 +71,11 @@ class EnrolmentRequest(BaseInfo):
 
     user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
 
-    terms_confirmation = models.BooleanField(default=False)
+    approved = models.BooleanField(blank=True, null=True)
+    terms_confirmation = models.BooleanField(blank=True, null=True)
     review_pending = models.BooleanField(default=True)
-    approved = models.BooleanField(default=False)
     email_confirmed = models.BooleanField(default=False)
     phone_confirmed = models.BooleanField(default=False)
 
-
-    def save(self, *args, **kwargs):
-        self.name = f'{self.email} | {self.phone}'
-        super().save(*args, **kwargs)
+    class Meta:
+        ordering = ['name']
