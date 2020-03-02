@@ -193,4 +193,6 @@ DEFAULT_FROM_EMAIL = "do_not_reply@ipfinity.project.corpberry.com"  # if you don
 SERVER_EMAIL = "alerts@ipfinity.project.corpberry.com"  # ditto (default from-email for Django errors)
 
 
-FRONTEND_URL = 'http://ipfinity.project.corpberry.com'
+# Few static links for emails transfer
+BACKEND_URL = 'https://api.ipfinity.project.corpberry.com'
+FRONTEND_URL = 'https://ipfinity.project.corpberry.com'
