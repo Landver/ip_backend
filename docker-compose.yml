@@ -39,6 +39,7 @@ services:
       - '443:443'
       - '80:80'
     volumes:
+      - ../build/:/usr/share/nginx/react_node
       - nginx:/etc/nginx/
     logging:
       driver: "json-file"
