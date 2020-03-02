@@ -45,7 +45,7 @@ class User(BaseInfo, AbstractUser):
 
     name = models.CharField(max_length=256, editable=False)
     role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='user')
-    terms_confirmation = models.BooleanField()
+    terms_confirmation = models.BooleanField(blank=True, null=True)
 
     def save(self, app_label=None, model_name=None, *args, **kwargs):
         if self.first_name:
