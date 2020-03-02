@@ -63,7 +63,7 @@ class EnrolmentRequestList(ListCreateAPIView):
         obj = serializer.instance
         token = PasswordResetTokenGenerator()
 
-        url = f'{settings.FRONTEND_URL}{obj.get_absolute_url()}'
+        url = f'{settings.BACKEND_URL}{obj.get_absolute_url()}'
 
         # Send confirmation to specified email.
         # TODO: Admin user need to be replaced, because it is security breach
