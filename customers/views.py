@@ -27,15 +27,18 @@ class UserList(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         data = request.data
-
-        if 'create_by_enrolmentrequest' in request.GET:
-            obj = EnrolmentRequest.objects.get(id=request.GET['create_by_enrolmentrequest'])
-            return(Response({"enrolmentrequest": EnrolmentRequestSerializer(obj).data}, status=status.HTTP_200_OK))
 
         if 'terms_confirmation' not in data or not data['terms_confirmation']:
             return(Response({"terms_confirmation": "terms need to be confirmed"}, status=status.HTTP_400_BAD_REQUEST))
+
+        return self.create(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if 'create_by_enrolmentrequest' in request.GET:
+            obj = EnrolmentRequest.objects.get(id=request.GET['create_by_enrolmentrequest'])
+            return(Response({"enrolmentrequest": EnrolmentRequestSerializer(obj).data}, status=status.HTTP_200_OK))
 
         return self.list(request, *args, **kwargs)
 
