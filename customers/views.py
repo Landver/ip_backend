@@ -105,7 +105,7 @@ class EnrolmentRequestDetail(RetrieveUpdateDestroyAPIView):
             if data['approved']:
                 reply = f'''
                          Enrolment Request {obj.name} had been approved. You can registrate account by following URL:
-                         {settings.FRONTEND_URL}/customers/user/?create_by_enrolmentrequest={obj.id}
+                         {settings.FRONTEND_URL}/customers/user/slug/id/?create_by_enrolmentrequest={obj.id}
                          '''
             else:
                 reply = f'Enrolment Request {obj.name} had been declined'
